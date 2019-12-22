@@ -5,5 +5,5 @@
     "documentation": "https://github.com/JonasR-/ruuvi_hass",
     "dependencies": [],
     "codeowners": ["@JonasR", "@salleq", "@PieterGit", "@smaisidoro"],
-    "requirements": ["ruuvitag_sensor"]
+    "requirements": ["https://github.com/ttu/ruuvitag-sensor/archive/bleson-ble-communication.zip#ruuvitag_sensor==1.0.0"]
   }
