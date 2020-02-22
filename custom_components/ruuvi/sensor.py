@@ -11,7 +11,7 @@ from homeassistant.const import (
     CONF_FORCE_UPDATE, CONF_MONITORED_CONDITIONS, CONF_NAME, CONF_MAC
 )
 
-from ruuvitag_sensor.ruuvi import RuuviTagSensor
+from ruuvitag_sensor.ruuvi import RuuviTagSensor, RunFlag
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -82,12 +82,31 @@ class RuuviProbe(object):
 
         default_condition = {'humidity': None, 'identifier': None, 'pressure': None, 'temperature': None}
         self.conditions = {mac: default_condition for mac in mac_addresses}
+        self.current_datas = {}
+        self.run_flag = RunFlag()
+        self.counter = 0
+
+    def handle_data(self, found_data):
+        # current datas allways replaces old datas with new ones.
+        # keys are the mac addresses
+        self.current_datas[found_data[0]] = found_data[1]
+        self.counter = self.counter - 1
+        if self.counter < 0:
+            self.run_flag.running = False
+
+    def consume_datas(self):
+        polled_datas = self.current_datas.copy()
+        self.current_datas = {}
+        return polled_datas
 
     def poll(self):
         if (datetime.datetime.now() - self.last_poll).total_seconds() < self.max_poll_interval:
             return
         try:
-            self.conditions = self.RuuviTagSensor.get_data_for_sensors(self.mac_addresses, self.timeout, self.adapter)
+            self.counter = len(self.mac_addresses) * 2
+            self.run_flag.running = True
+            RuuviTagSensor.get_datas(self.handle_data, self.mac_addresses, self.run_flag)
+            self.conditions = self.consume_datas()
         except:
             _LOGGER.exception("Error on polling sensors")
         self.last_poll = datetime.datetime.now()
