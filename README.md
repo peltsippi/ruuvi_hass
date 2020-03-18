@@ -9,6 +9,9 @@ sensor:
   - platform: ruuvi-hass
     mac: 'MA:CA:DD:RE:SS:00'
     name: 'livingroom'
+    #OPTIONAL
+    timeout: 5   #default :3
+    poll_interval: 10   #default:10, in seconds
     
   - platform: ruuvi-hass
     mac: 'MA:CA:DD:RE:SS:01'
@@ -26,9 +29,14 @@ Defaults to ruuvi ble_communicator default (at this point is `hci0`)
     adapter: 'hci0' 
 ```
 
+TODO:
+-Add estimate of battery left (calculate somehow based on voltage value transmitted)
+-Add acceleration sensor etc
+
 
 ## Contributors 
 [JonasR-](https://github.com/JonasR-) (author)
 [PieterGit](https://github.com/PieterGit)
 [salleq](https://github.com/salleq)
 [smaisidoro](https://github.com/sergioisidoro)
+{peltsippi](https://github.com/peltsippi)
